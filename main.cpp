@@ -8,6 +8,8 @@ using namespace std;
 void insert(node* current, node*& root, int value);
 void print(int depth, node* current);
 void search(int s, node* current, bool& found);
+void deletion(int d, node* current, node* parent);
+node* find(node* current, int d);
 
 int main(){
 
@@ -80,9 +82,109 @@ int main(){
       }
     }
 
+    if(command == "delete" || command == "DELETE"){
+      cout<<"What number are you looking to delete?"<<endl;
+      int d = 0;
+      cin>>d;
+
+      deletion(d, root, root);
+    }
+
   }
   
 }
+
+void deletion(int d, node* current, node* parent){
+
+  if(current->right != NULL){
+    deletion(d, current->right, current);
+  }
+
+  if(current != NULL){
+    if(d == current->value){
+      //delete
+      if(current->left == NULL &&  current->right == NULL){ // NO CHILD CASE
+	if(parent->value > current->value){
+	  parent->left = NULL;
+	  delete current;
+	}else{
+	  parent->right = NULL;
+	  delete current;
+	}
+      }
+
+      // 1 Child case
+      if(current -> left == NULL && current->right != NULL){ //set right to current
+	node* replace = current->right;
+
+	if(parent->right == current){
+	  parent->right = replace;
+	  delete current;
+	}
+
+	if(parent->left == current){
+	  parent->left = replace;
+	  delete current;
+	}
+      }
+
+      if(current->right == NULL && current ->left != NULL){ //set left to current
+	node* replace = current->left;
+
+	if(parent->right == current){
+	  parent->right = replace;
+	  delete current;
+	}
+
+	if(parent->left == current){
+	  parent->left = replace;
+	  delete current;
+	}
+      }
+
+      // 2 child case
+
+      if(current->right != NULL && current->left != NULL){
+	cout<<current->value<<endl;
+	node* successor = find(current, d);
+	cout<< successor->value<<endl;
+	
+      }
+
+      
+    }
+  }
+
+  // move all way to the left side of the tree
+  if(current->left != NULL){
+    deletion(d, current->left, current);
+  }
+
+}
+
+node* find(node* current, int d){
+  // go the left
+  cout<<"RUNNING FIND, current: "<<current->value<<endl;
+  // On first call ONLY
+  Node* temp;
+  if(current->value == d){
+    temp = find(current->left, d);
+  }
+
+  // go as far to the right
+  if(current->right != NULL){
+    temp = find(current->right, d);
+  }
+  else{
+    cout<<"about to return: "<<current->value<<endl;
+    return temp;
+
+  }
+
+  cout<<"umm failure!!"<<endl;
+  return NULL;
+}
+
 
 void search(int s, node* current, bool& found){
   if(current->right != NULL){
