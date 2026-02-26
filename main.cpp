@@ -7,6 +7,7 @@ using namespace std;
 // Tree building
 void insert(node* current, node*& root, int value);
 void print(int depth, node* current);
+void search(int s, node* current, bool& found);
 
 int main(){
 
@@ -19,7 +20,7 @@ int main(){
 
     command.clear();
     
-    cout<<"Enter ADD, FILE ADD"<<endl;
+    cout<<"Enter ADD, FILE ADD, PRINT, SEARCH"<<endl;
 
     getline(cin, command);
     
@@ -51,19 +52,55 @@ int main(){
     }
     
     if(command == "print" || command == "PRINT"){
-      cout<<"ROOT: "<< root->value<<endl;
+      /*cout<<"ROOT: "<< root->value<<endl;
       if(root->right != NULL){
 	cout<<"ROOT RIGHT: " <<root->right->value<<endl;
       }
       if(root->left != NULL){
 	cout<<"ROOT LEFT: " <<root->left->value<<endl;
-      }
+      }*/
 
       print(0, root);
-    }    
+    }
+
+    if(command == "search" || command == "SEARCH"){
+      cout<<"What number are you searching for?"<<endl;
+      int s = 0;
+      cin>>s;
+      cin.ignore();
+      bool found = false;
+      if(root != NULL){
+	search(s, root, found);
+	if(found == false){
+	  cout<<"Your number is not in the tree.."<<endl;
+	}
+      }
+      else{
+	cout<<"Tree is empty"<<endl;
+      }
+    }
 
   }
   
+}
+
+void search(int s, node* current, bool& found){
+  if(current->right != NULL){
+    search(s, current->right, found);
+  }
+
+  if(current != NULL){
+    if(current->value == s){
+      cout<<"Your number is in the tree"<<endl;
+      found = true;
+      return;
+    }
+  }
+
+  // move all way to the left side of the tree
+  if(current->left != NULL){
+    search(s, current->left, found);
+  }
 }
 
 void print(int depth, node* current){
