@@ -6,8 +6,7 @@ using namespace std;
 
 // Tree building
 void insert(node* current, node*& root, int value);
-
-void print(node* current);
+void print(int depth, node* current);
 
 int main(){
 
@@ -18,6 +17,8 @@ int main(){
 
   while(true){
 
+    command.clear();
+    
     cout<<"Enter ADD, FILE ADD"<<endl;
 
     getline(cin, command);
@@ -45,6 +46,7 @@ int main(){
     if(command == "add" || command == "ADD"){
       cout<<"Enter number to add"<<endl;
       cin>>input;
+      cin.ignore();
       insert(root, root, input);
     }
     
@@ -57,15 +59,34 @@ int main(){
 	cout<<"ROOT LEFT: " <<root->left->value<<endl;
       }
 
-      print(root);
+      print(0, root);
     }    
 
   }
   
 }
 
-void print(node* current){
-  cout<<"running real pring func"<<endl;
+void print(int depth, node* current){
+  //  cout<<"running real pring func"<<endl;
+  //move all the way to the right of the tree
+
+  if(current->right != NULL){
+    print((depth + 1), current->right);
+  }
+
+  //tab over depth times!
+  for(int i = 0; i < depth; i++){
+    cout<<"\t";
+  }
+
+  if(current != NULL){
+    cout<<current->value<<endl;
+  }
+
+  // move all way to the left side of the tree
+  if(current->left != NULL){
+    print((depth + 1), current->left);
+  }
 }
 
 void insert(node* current, node*& root, int value){
