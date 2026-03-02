@@ -108,9 +108,11 @@ void deletion(int d, node* current, node* parent, node*& root){
 	if(parent->value > current->value){
 	  parent->left = NULL;
 	  delete current;
+	  return;
 	}else{
 	  parent->right = NULL;
 	  delete current;
+	  return;
 	}
       }
 
@@ -121,11 +123,13 @@ void deletion(int d, node* current, node* parent, node*& root){
 	if(parent->right == current){
 	  parent->right = replace;
 	  delete current;
+	  return;
 	}
 
 	if(parent->left == current){
 	  parent->left = replace;
 	  delete current;
+	  return;
 	}
       }
 
@@ -135,12 +139,21 @@ void deletion(int d, node* current, node* parent, node*& root){
 	if(parent->right == current){
 	  parent->right = replace;
 	  delete current;
+	  return;
 	}
 
 	if(parent->left == current){
 	  parent->left = replace;
 	  delete current;
+	  return;
 	}
+      }
+
+      // 1 child if its a root missng one side from the 2 child case thing
+      if(current == root && root->left == NULL){
+	root = root->right;
+	delete current;
+	return;
       }
 
       // 2 child case
@@ -158,16 +171,24 @@ void deletion(int d, node* current, node* parent, node*& root){
 	if(successor->left != NULL){
 
 	  // Put the successor left into the right of the parent of the successor
-
-	  successorParent->right = successor->left;
+	  if(successorParent != root){
+	    successorParent->right = successor->left;
+	  }else{
+	    successorParent->left = successor->left;
+	  }
 	  
 	  cout<<"Executre 1 child delete"<<endl;
 	}
 
 	//Do NO child delete if it has no left
 	if(successor->left == NULL){
-	  
-	  successorParent->right = NULL;
+
+	  if(successorParent != root){
+	    successorParent->right = NULL;
+	  }
+	  else{
+	    successorParent->left = NULL;
+	  }
 
 	}
 
