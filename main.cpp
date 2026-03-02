@@ -8,8 +8,8 @@ using namespace std;
 void insert(node* current, node*& root, int value);
 void print(int depth, node* current);
 void search(int s, node* current, bool& found);
-void deletion(int d, node* current, node* parent);
-node* find(node* current, int d);
+void deletion(int d, node* current, node* parent, node*& root);
+node* find(node* current, int d, node*& parent);
 
 int main(){
 
@@ -86,18 +86,19 @@ int main(){
       cout<<"What number are you looking to delete?"<<endl;
       int d = 0;
       cin>>d;
-
-      deletion(d, root, root);
+      cin.ignore();
+      
+      deletion(d, root, root, root);
     }
 
   }
   
 }
 
-void deletion(int d, node* current, node* parent){
+void deletion(int d, node* current, node* parent, node*& root){
 
   if(current->right != NULL){
-    deletion(d, current->right, current);
+    deletion(d, current->right, current, root);
   }
 
   if(current != NULL){
@@ -146,8 +147,44 @@ void deletion(int d, node* current, node* parent){
 
       if(current->right != NULL && current->left != NULL){
 	cout<<current->value<<endl;
-	node* successor = find(current, d);
+	node* successorParent = NULL;
+	node* successor = find(current, d, successorParent);
+
+	cout<<successorParent->value<<endl;
 	cout<< successor->value<<endl;
+	// These are correct^^^^^^^^^^^^^
+	
+	//Do 1 child delete for successor if it has a left
+	if(successor->left != NULL){
+
+	  // Put the successor left into the right of the parent of the successor
+
+	  successorParent->right = successor->left;
+	  
+	  cout<<"Executre 1 child delete"<<endl;
+	}
+
+	//Do NO child delete if it has no left
+	if(successor->left == NULL){
+	  
+	  successorParent->right = NULL;
+
+	}
+
+
+	//Then like sub it in
+	successor->left = current->left;
+	successor->right = current->right;
+
+	// Replace root if that is what is happening hereee!
+	if(current->value == root->value){
+	  root = successor;
+	}
+	//	current->left = NULL;
+	//	current->right = NULL;
+	delete current;
+
+	
 	
       }
 
@@ -157,27 +194,29 @@ void deletion(int d, node* current, node* parent){
 
   // move all way to the left side of the tree
   if(current->left != NULL){
-    deletion(d, current->left, current);
+    deletion(d, current->left, current, root);
   }
 
 }
 
-node* find(node* current, int d){
+node* find(node* current, int d, node*& parent){
   // go the left
   cout<<"RUNNING FIND, current: "<<current->value<<endl;
   // On first call ONLY
-  Node* temp;
+  // node* temp;
   if(current->value == d){
-    temp = find(current->left, d);
+    parent = current;
+    return find(current->left, d, parent);
   }
 
   // go as far to the right
   if(current->right != NULL){
-    temp = find(current->right, d);
+    parent = current;
+    return find(current->right, d, parent);
   }
   else{
-    cout<<"about to return: "<<current->value<<endl;
-    return temp;
+    cout<<"about to return: "<<current->value<<"with parent: "<<parent->value<<endl;
+    return current;
 
   }
 
