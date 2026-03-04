@@ -1,10 +1,16 @@
+/* Ella MacPherson
+   3/4/2026 Binary search tree
+   a tree that searchs binarily!!!!!! :DDD
+ */
+
+
 #include <iostream>
 #include <fstream>
 #include "node.h"
 
 using namespace std;
 
-// Tree building
+// Func decleration
 void insert(node* current, node*& root, int value);
 void print(int depth, node* current);
 void search(int s, node* current, bool& found);
@@ -20,12 +26,14 @@ int main(){
 
   while(true){
 
+    // Clear for new input
     command.clear();
     
     cout<<"Enter ADD, FILE ADD, PRINT, SEARCH"<<endl;
 
     getline(cin, command);
-    
+
+    // Check the command..
     if(command == "FILE ADD" || command == "file add"){
       string filename = ""; // Stores file name
 
@@ -50,18 +58,11 @@ int main(){
       cout<<"Enter number to add"<<endl;
       cin>>input;
       cin.ignore();
+      // Run insert func
       insert(root, root, input);
     }
     
     if(command == "print" || command == "PRINT"){
-      /*cout<<"ROOT: "<< root->value<<endl;
-      if(root->right != NULL){
-	cout<<"ROOT RIGHT: " <<root->right->value<<endl;
-      }
-      if(root->left != NULL){
-	cout<<"ROOT LEFT: " <<root->left->value<<endl;
-      }*/
-
       print(0, root);
     }
 
@@ -70,7 +71,7 @@ int main(){
       int s = 0;
       cin>>s;
       cin.ignore();
-      bool found = false;
+      bool found = false; // keep track
       if(root != NULL){
 	search(s, root, found);
 	if(found == false){
@@ -95,8 +96,9 @@ int main(){
   
 }
 
+// big fat delete function
 void deletion(int d, node* current, node* parent, node*& root){
-
+  // iterate through.. yes its a copy of print
   if(current->right != NULL){
     deletion(d, current->right, current, root);
   }
@@ -177,14 +179,6 @@ void deletion(int d, node* current, node* parent, node*& root){
 	  return;
 	}
       }
-
-      // 1 child if its a root missng one side from the 2 child case thing
-      /*      if(current == root && root->left == NULL){
-	root = root->right;
-	delete current;
-	return;
-      }*/
-
       
       // 2 child case
       
@@ -193,15 +187,14 @@ void deletion(int d, node* current, node* parent, node*& root){
 	node* successorParent = NULL;
 	node* successor = find(current, d, successorParent);
 
-	cout<<"deleting: " << current->value<<endl;
+	//	cout<<"deleting: " << current->value<<endl;
 	
-	cout<<"successor parent: "<< successorParent->value<<endl;
-	cout<<"successor: "<< successor->value<<endl;
-	cout<<"parent of current: "<<parent->value<<endl;
+	//	cout<<"successor parent: "<< successorParent->value<<endl;
+	//	cout<<"successor: "<< successor->value<<endl;
+	//	cout<<"parent of current: "<<parent->value<<endl;
+
 	// We are 2 child deleting the root
 	if(current == root){
-	  cout<<"deleting root with 2 child"<<endl;
-	// These are correct^^^^^^^^^^^^^
 	  
 	//Do 1 child delete for successor if it has a left
 	  if(successor->left != NULL){
@@ -212,8 +205,7 @@ void deletion(int d, node* current, node* parent, node*& root){
 	    }else{
 	      successorParent->left = successor->left;
 	    }
-	    
-	    //	    cout<<"Executre 1 child delete"<<endl;
+	   
 	  }
 	  
 	  //Do NO child delete if it has no left
@@ -237,11 +229,11 @@ void deletion(int d, node* current, node* parent, node*& root){
 	  if(current->value == root->value){
 	    root = successor;
 	  }
-	  //	current->left = NULL;
-	  //	current->right = NULL;
+	  
 	  delete current;
 	  return;
 	}
+	
 	// We are 2 child deleting a random number in our beautiful scheme
 	else{
 	  cout<<"running 2 child NOT root delete"<<endl;
@@ -295,7 +287,6 @@ node* find(node* current, int d, node*& parent){
   // go the left
   cout<<"RUNNING FIND, current: "<<current->value<<endl;
   // On first call ONLY
-  // node* temp;
   if(current->value == d){
     parent = current;
     return find(current->left, d, parent);
@@ -337,7 +328,6 @@ void search(int s, node* current, bool& found){
 }
 
 void print(int depth, node* current){
-  //  cout<<"running real pring func"<<endl;
   //move all the way to the right of the tree
 
   if(current->right != NULL){
@@ -367,18 +357,6 @@ void insert(node* current, node*& root, int value){
     root = new node(NULL, NULL, value);
     return;
   }
-
-  /*  // If the current node has no left or right
-  if(current->right == NULL && current->left == NULL){
-    // Check if value is greater than current value
-    if(current->value < value){
-     
-    }
-    // If value is less than current value
-    else{ 
-      current->left = new node(NULL,NULL,value);
-    }
-  }*/
 
   if(current->value < value){
     // recursive down to right till NULL
