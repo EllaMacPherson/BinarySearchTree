@@ -101,115 +101,186 @@ void deletion(int d, node* current, node* parent, node*& root){
     deletion(d, current->right, current, root);
   }
 
+  // As long as there is somthing in the list
   if(current != NULL){
+    // current is now = to one we wanna delete
     if(d == current->value){
-      //delete
-      if(current->left == NULL &&  current->right == NULL){ // NO CHILD CASE
-	if(parent->value > current->value){
-	  parent->left = NULL;
-	  delete current;
-	  return;
-	}else{
-	  parent->right = NULL;
-	  delete current;
-	  return;
-	}
-      }
+      // NO CHILD CASE
+	if(current->left == NULL &&  current->right == NULL){ // NO CHILD CASE
 
-      // 1 Child case
+	  // We are NOT deleting root
+	  if(current != root){
+	    if(parent->value > current->value){
+	      parent->left = NULL;
+	      delete current;
+	      return;
+	    }else{
+	      parent->right = NULL;
+	      delete current;
+	      return;
+	    }
+	  }
+	  else{ // We are deleting the root with NO children
+	    delete current;
+	    root = NULL;
+	    return;
+	  }
+	}
+      
+
+      // 1 Child case with a right child
       if(current -> left == NULL && current->right != NULL){ //set right to current
 	node* replace = current->right;
-
-	if(parent->right == current){
-	  parent->right = replace;
-	  delete current;
-	  return;
+	//we are not deleting root
+	if(current != root){
+	  if(parent->right == current){
+	    parent->right = replace;
+	    delete current;
+	    return;
+	  }
+	  
+	  if(parent->left == current){
+	    parent->left = replace;
+	    delete current;
+	    return;
+	  }
 	}
-
-	if(parent->left == current){
-	  parent->left = replace;
+	// We are deleting root with a right value
+	else{
+	  root = current->right;
 	  delete current;
 	  return;
 	}
       }
-
+	  
+      // 1 child case with a left child
       if(current->right == NULL && current ->left != NULL){ //set left to current
 	node* replace = current->left;
-
-	if(parent->right == current){
-	  parent->right = replace;
-	  delete current;
-	  return;
+	// We are deleting not root
+	if(current != root){
+	  if(parent->right == current){
+	    parent->right = replace;
+	    delete current;
+	    return;
+	  }
+	  
+	  if(parent->left == current){
+	    parent->left = replace;
+	    delete current;
+	    return;
+	  }
 	}
-
-	if(parent->left == current){
-	  parent->left = replace;
+	// We are deleting root with a left child
+	else{
+	  root = current->left;
 	  delete current;
 	  return;
 	}
       }
 
       // 1 child if its a root missng one side from the 2 child case thing
-      if(current == root && root->left == NULL){
+      /*      if(current == root && root->left == NULL){
 	root = root->right;
 	delete current;
 	return;
-      }
+      }*/
 
+      
       // 2 child case
-
+      
       if(current->right != NULL && current->left != NULL){
-	cout<<current->value<<endl;
+	
 	node* successorParent = NULL;
 	node* successor = find(current, d, successorParent);
 
-	cout<<successorParent->value<<endl;
-	cout<< successor->value<<endl;
-	// These are correct^^^^^^^^^^^^^
+	cout<<"deleting: " << current->value<<endl;
 	
+	cout<<"successor parent: "<< successorParent->value<<endl;
+	cout<<"successor: "<< successor->value<<endl;
+	cout<<"parent of current: "<<parent->value<<endl;
+	// We are 2 child deleting the root
+	if(current == root){
+	  cout<<"deleting root with 2 child"<<endl;
+	// These are correct^^^^^^^^^^^^^
+	  
 	//Do 1 child delete for successor if it has a left
-	if(successor->left != NULL){
+	  if(successor->left != NULL){
+	    
+	    // Put the successor left into the right of the parent of the successor
+	    if(successorParent != root){
+	      successorParent->right = successor->left;
+	    }else{
+	      successorParent->left = successor->left;
+	    }
+	    
+	    //	    cout<<"Executre 1 child delete"<<endl;
+	  }
+	  
+	  //Do NO child delete if it has no left
+	  if(successor->left == NULL){
+	    
+	    if(successorParent != root){
+	      successorParent->right = NULL;
+	    }
+	    else{
+	      successorParent->left = NULL;
+	    }
+	    
+	  }
 
-	  // Put the successor left into the right of the parent of the successor
-	  if(successorParent != root){
-	    successorParent->right = successor->left;
-	  }else{
+	  
+	  //Then like sub it in
+	  successor->left = current->left;
+	  successor->right = current->right;
+	  
+	  // Replace root if that is what is happening hereee!
+	  if(current->value == root->value){
+	    root = successor;
+	  }
+	  //	current->left = NULL;
+	  //	current->right = NULL;
+	  delete current;
+	  return;
+	}
+	// We are 2 child deleting a random number in our beautiful scheme
+	else{
+	  cout<<"running 2 child NOT root delete"<<endl;
+	  // patch successor things
+	  //Do 1 child delete for successor if it has a left
+	  if(successor->left != NULL){
+	    // Put the successor left into the right of the parent of the successor
 	    successorParent->left = successor->left;
 	  }
 	  
-	  cout<<"Executre 1 child delete"<<endl;
-	}
+	  //Do NO child delete if it has no left
+	  if(successor->left == NULL){
+	    // Set the successor parent left to null
+	    successorParent->left = NULL;
+	    
+	  }
 
-	//Do NO child delete if it has no left
-	if(successor->left == NULL){
+	  // replace currents L and R with successor
+	  successor->left = current->left;
+	  successor->right = current->right;
 
-	  if(successorParent != root){
-	    successorParent->right = NULL;
+	  // Patch it to the old parent
+	  if(current->value > parent->value){
+	    parent->right = successor;
 	  }
 	  else{
-	    successorParent->left = NULL;
+	    parent->left = successor;
 	  }
 
+	  // Then we can finalyl delete the current
+	  delete current;
+	  return;
+	  
+	  
 	}
-
-
-	//Then like sub it in
-	successor->left = current->left;
-	successor->right = current->right;
-
-	// Replace root if that is what is happening hereee!
-	if(current->value == root->value){
-	  root = successor;
-	}
-	//	current->left = NULL;
-	//	current->right = NULL;
-	delete current;
-
 	
 	
       }
 
-      
     }
   }
 
